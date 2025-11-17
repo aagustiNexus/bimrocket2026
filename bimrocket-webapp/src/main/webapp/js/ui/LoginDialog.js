@@ -5,6 +5,7 @@
  */
 
 import { Dialog } from "./Dialog.js";
+import { Auth } from "./Auth.js";
 
 class LoginDialog extends Dialog
 {
@@ -13,8 +14,7 @@ class LoginDialog extends Dialog
     super("title.login");
     this.application = application;
     this.setI18N(this.application.i18n);
-
-    this.setSize(240, 180);
+    this.setSize(280, 240);
 
     if (message)
     {
@@ -41,6 +41,8 @@ class LoginDialog extends Dialog
 
     this.cancelButton = this.addButton("login_cancel", "button.cancel",
       () => this.onCancel());
+
+    Auth.addAuthButtons(this.footerElem);
   }
 
   onShow()
