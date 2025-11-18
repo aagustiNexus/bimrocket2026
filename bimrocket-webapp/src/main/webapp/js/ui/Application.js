@@ -39,6 +39,7 @@ import { ObjectBatcher } from "../utils/ObjectBatcher.js";
 import { I18N } from "../i18n/I18N.js";
 import WebGL from "../utils/WebGL.js";
 import { Environment } from "../Environment.js";
+import { Auth } from "./Auth.js";
 import * as THREE from "three";
 
 class Application
@@ -126,6 +127,9 @@ class Application
    	THREE.Object3D.DEFAULT_MATRIX_AUTO_UPDATE = false;
    	THREE.Object3D.DEFAULT_UP = new THREE.Vector3(0, 0, 1);
     THREE.Object3D.HIDDEN_PREFIX = ".";
+
+    /* Oauth */
+    Auth.init();
 
     /* create sub elements */
 
