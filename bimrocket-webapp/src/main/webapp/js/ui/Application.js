@@ -129,7 +129,7 @@ class Application
     THREE.Object3D.HIDDEN_PREFIX = ".";
 
     /* Oauth */
-    Auth.init();
+    Auth.init(Environment.SERVER_ALIAS);
 
     /* create sub elements */
 

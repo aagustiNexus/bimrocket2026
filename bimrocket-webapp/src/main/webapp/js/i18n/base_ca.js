@@ -81,9 +81,6 @@ export const translations =
   "button.menu_show" : "MENÚ",
   "button.menu_hide" : "TANCA",
 
-  "button.auth_valid": "Autenticació amb VALID",
-  "button.auth_gicar": "Autenticació amb GICAR",
-
   "units.km" : "kilometres",
   "units.m" : "metres",
   "units.cm" : "centímetres",

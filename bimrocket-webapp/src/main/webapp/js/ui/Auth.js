@@ -5,6 +5,7 @@
  */
 
 import { Controls } from "./Controls.js";
+import { CredentialsManager } from "../utils/CredentialsManager.js";
 
 export class Auth
 {
@@ -55,13 +56,16 @@ export class Auth
     },
   };
 
-  static currentOrigin = "";
+  static currentOrigin = null;
   static currentConfig = null;
+  static targetAlias = null;
 
-  static init()
+  static init(alias)
   {
     Auth.currentOrigin = window.location.origin;
     Auth.currentConfig = Auth.AUTH_ENVIRONMENT[Auth.currentOrigin];
+    Auth.targetAlias = alias;
+
 
     if (!Auth.currentConfig)
     {
@@ -78,47 +82,22 @@ export class Auth
     const container = document.createElement("div");
     parentElement.appendChild(container);
 
-    Controls.addButton(container, "auth_valid", "VALID", () => Auth.loginWithValid());
-    Controls.addButton(container, "auth_gicar", "GICAR", () => Auth.loginWithGicar());
-    Controls.addButton(container, "auth_keycloak", "Keycloak", () => Auth.loginWithKeycloak());
+    Controls.addButton(container, "auth_valid", "VALID", () => Auth.login("valid"));
+    Controls.addButton(container, "auth_gicar", "GICAR", () => Auth.login("gicar"));
+    Controls.addButton(container, "auth_keycloak", "Keycloak", () => Auth.login("keycloak"));
   }
 
-  static loginWithValid()
+  static login(providerName)
   {
-    const config = Auth.currentConfig?.valid;
+    const config = Auth.currentConfig?.[providerName];
+    console.log(`Oauth con ${providerName}`);
 
-    if (config)
-    {
-      console.log("Oauth con valid");
-      Auth.startLogin(config);
-    }
-    else
-    {
-      console.error("Config. inválida");
-    }
+    if (!config) throw new Error ("Config. inválida o entorno no soportado");
+
+    Auth.openAuthPopup(config);
   }
 
-  static loginWithGicar()
-  {
-    console.log("Oauth con Gicar");
-  }
-
-  static loginWithKeycloak()
-  {
-    const config = Auth.currentConfig?.keycloak;
-
-    if (config)
-    {
-      console.log("Oauth con Keycloak");
-      Auth.startLogin(config);
-    }
-    else
-    {
-      console.error("Config. inválida");
-    }
-  }
-
-  static startLogin(config)
+  static openAuthPopup(config)
   {
     const params = new URLSearchParams();
 
@@ -139,23 +118,11 @@ export class Auth
 
   static handleAuthToken(event)
   {
-    // if (event.origin !== Auth.currentOrigin)
-    // {
-    //   console.warn(`Origen no coincide, ${event.origin}`);
-    //   return;
-    // }
+    if (!event.data) return;
 
-    if (event.data && event.data.accessToken)
-    {
-      const servletToken = event.data.accessToken;
+    const {accessToken, username} = event.data;
 
-      console.log(`Backend token:, ${servletToken}`);
-      localStorage.setItem("accessToken", servletToken);
-    }
-    else
-    {
-      console.log(`Fallo data del back: ${event.data}`);
-    }
+    CredentialsManager.setCredentials(Auth.targetAlias, username, accessToken);
+    CredentialsManager.saveCredentials(Auth.targetAlias);
   }
 }
-
