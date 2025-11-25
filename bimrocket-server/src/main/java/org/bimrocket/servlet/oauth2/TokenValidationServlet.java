@@ -30,6 +30,7 @@
  */
 package org.bimrocket.servlet.oauth2;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -206,6 +207,14 @@ public class TokenValidationServlet extends HttpServlet
   {
     String targetOrigin = "*";
 
+    // Create JSON with Jackson
+    Map<String, Object> jsonMap = new HashMap<>();
+    jsonMap.put("accessToken", userToken.getAccessToken());
+    jsonMap.put("username", userToken.getUserId());
+
+    ObjectMapper mapper = new ObjectMapper();
+    String jsonString = mapper.writeValueAsString(jsonMap);
+
     response.setContentType("text/html; charset=UTF-8");
     PrintWriter out = response.getWriter();
 
@@ -215,13 +224,14 @@ public class TokenValidationServlet extends HttpServlet
     out.println("<body>");
     out.println("<script>");
     out.println("  (function() {");
-    out.println("    const accessToken = " + Utils.escapeJsString(userToken.getAccessToken()) + ";");
-    out.println("    const username = " + Utils.escapeJsString(userToken.getUserId()) + ";");
+
+    // JSON
+    out.println("    const message = " + mapper.writeValueAsString(jsonString) + ";");
     out.println("    if (window.opener) {");
-    out.println("      window.opener.postMessage({ accessToken: accessToken, username: username }, '" + targetOrigin + "');");
+    out.println("      window.opener.postMessage(JSON.parse(message), '" + targetOrigin + "');");
     out.println("      window.close();");
     out.println("    } else {");
-    out.println("      document.body.textContent = 'accessToken = ' + accessToken + ', username = ' + username;");
+    out.println("      document.body.textContent = message;");
     out.println("    }");
     out.println("  })();");
     out.println("</script>");
