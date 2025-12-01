@@ -5,13 +5,20 @@
  */
 
 import { Controls } from "./Controls.js";
-import { CredentialsManager } from "../utils/CredentialsManager.js";
 
 export class Auth
 {
   static AUTH_ENVIRONMENT = {
     // ! entorno local
     "http://127.0.0.1:5500": {
+      keycloak: {
+        authUrl: "https://iam.i2cat.net/auth/realms/SEG/protocol/openid-connect/auth",
+        clientId: "bim",
+        scope: "openid",
+        redirectUri: "http://localhost:9090/bimrocket-server/api/oauth2/authCode/keycloak",
+      },
+    },
+    "http://localhost:8181": {
       keycloak: {
         authUrl: "https://iam.i2cat.net/auth/realms/SEG/protocol/openid-connect/auth",
         clientId: "bim",
@@ -37,7 +44,7 @@ export class Auth
         authUrl: "https://iam.i2cat.net/auth/realms/SEG/protocol/openid-connect/auth",
         clientId: "bim",
         scope: "openid",
-        redirectUri: "http://localhost:9090/bimrocket-server/api/oauth2/authCode/keycloak",
+        redirectUri: "https://preprod.bim.i2cat.net/bimrocket-server/api/oauth2/authCode/keycloak",
       },
     },
     "https://bim.santfeliu.cat": {
@@ -56,24 +63,21 @@ export class Auth
     },
   };
 
-  static currentOrigin = null;
   static currentConfig = null;
-  static targetAlias = null;
 
-  static init(alias)
+  static init()
   {
-    Auth.currentOrigin = window.location.origin;
-    Auth.currentConfig = Auth.AUTH_ENVIRONMENT[Auth.currentOrigin];
-    Auth.targetAlias = alias;
+    const origin = window.location.origin;
 
+    Auth.currentConfig = Auth.AUTH_ENVIRONMENT[origin];
 
     if (!Auth.currentConfig)
     {
-      console.warn("NO hay config definida");
+      console.warn("No hay config definida");
       return;
     }
 
-    console.log(`Autenticación en: ${Auth.currentOrigin}`);
+    console.log(`Autenticación en: ${origin}`);
     window.addEventListener("message", Auth.handleAuthToken);
   }
 
@@ -82,15 +86,25 @@ export class Auth
     const container = document.createElement("div");
     parentElement.appendChild(container);
 
-    Controls.addButton(container, "auth_valid", "VALID", () => Auth.login("valid"));
-    Controls.addButton(container, "auth_gicar", "GICAR", () => Auth.login("gicar"));
-    Controls.addButton(container, "auth_keycloak", "Keycloak", () => Auth.login("keycloak"));
+    const providers = Object.keys(Auth.currentConfig);
+
+    providers.forEach((provider) =>
+    {
+      const buttonLabel = provider.toUpperCase();
+
+      Controls.addButton(
+        container,
+        `auth_${provider}`,
+        buttonLabel,
+        () => Auth.login(provider),
+      );
+    });
   }
 
   static login(providerName)
   {
-    const config = Auth.currentConfig?.[providerName];
     console.log(`Oauth con ${providerName}`);
+    const config = Auth.currentConfig?.[providerName];
 
     if (!config) throw new Error ("Config. inválida o entorno no soportado");
 
@@ -120,9 +134,17 @@ export class Auth
   {
     if (!event.data) return;
 
-    const {accessToken, username} = event.data;
+    const { accessToken, username } = event.data;
 
-    CredentialsManager.setCredentials(Auth.targetAlias, username, accessToken);
-    CredentialsManager.saveCredentials(Auth.targetAlias);
+    const authEvent = new CustomEvent("auth-success", {
+      detail: {
+        username: username,
+        password: accessToken,
+      },
+    });
+    window.dispatchEvent(authEvent);
   }
 }
+
+
+

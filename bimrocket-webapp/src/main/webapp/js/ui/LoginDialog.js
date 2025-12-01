@@ -43,6 +43,17 @@ class LoginDialog extends Dialog
       () => this.onCancel());
 
     Auth.addAuthButtons(this.footerElem);
+
+    this.authSuccessHandler = (event) =>
+    {
+      const { username, password } = event.detail;
+
+      this.hide();
+      this.login(username, password);
+      window.removeEventListener("auth-success", this.authSuccessHandler);
+    },
+
+    window.addEventListener("auth-success", this.authSuccessHandler);
   }
 
   onShow()
@@ -67,3 +78,7 @@ class LoginDialog extends Dialog
 }
 
 export { LoginDialog };
+
+
+
+
