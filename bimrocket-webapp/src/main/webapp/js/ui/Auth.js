@@ -4,85 +4,34 @@
  * @author i2cat
  */
 
+import { Environment } from "../Environment.js";
 import { Controls } from "./Controls.js";
 
 export class Auth
 {
-  static AUTH_ENVIRONMENT = {
-    // ! entorno local
-    "http://127.0.0.1:5500": {
-      keycloak: {
-        authUrl: "https://iam.i2cat.net/auth/realms/SEG/protocol/openid-connect/auth",
-        clientId: "bim",
-        scope: "openid",
-        redirectUri: "http://localhost:9090/bimrocket-server/api/oauth2/authCode/keycloak",
-      },
-    },
-    "http://localhost:8181": {
-      keycloak: {
-        authUrl: "https://iam.i2cat.net/auth/realms/SEG/protocol/openid-connect/auth",
-        clientId: "bim",
-        scope: "openid",
-        redirectUri: "http://localhost:9090/bimrocket-server/api/oauth2/authCode/keycloak",
-      },
-    },
-    // ! entorno pre-prod
-    "https://preprod.bim.i2cat.net": {
-      valid: {
-        authUrl: "https://valid-pre.aoc.cat/o/oauth2/auth",
-        clientId: "tramits.gencat.bim_fue.cat",
-        scope: "autenticacio_usuari",
-        redirectUri: "https://preprod.bim.i2cat.net/bimrocket-server/api/oauth2/authCode/valid",
-      },
-      gicar: {
-        authUrl: "...",
-        clientId: "...",
-        scope: "...",
-        redirectUri: "https://preprod.bim.i2cat.net/bimrocket-server/api/oauth2/authCode/gicar",
-      },
-      keycloak: {
-        authUrl: "https://iam.i2cat.net/auth/realms/SEG/protocol/openid-connect/auth",
-        clientId: "bim",
-        scope: "openid",
-        redirectUri: "https://preprod.bim.i2cat.net/bimrocket-server/api/oauth2/authCode/keycloak",
-      },
-    },
-    "https://bim.santfeliu.cat": {
-      valid: {
-        authUrl: "https://valid.aoc.cat/o/oauth2/auth",
-        clientId: "...",
-        scope: "autenticacio_usuari",
-        redirectUri: "...",
-      },
-      gicar: {
-        authUrl: "...",
-        clientId: "...",
-        scope: "...",
-        redirectUri: "",
-      },
-    },
-  };
+  /**
+ * Responsible for OAuth authentication management.
+ * It relies on the configuration defined in Environment.js (AUTH_ENVIRONMENT).
+ * If the current origin (window.location.origin) does not match any key
+ * in Environment.js, OAuth authentication is disabled and only basic login is shown.
+ */
 
   static currentConfig = null;
 
   static init()
   {
     const origin = window.location.origin;
+    Auth.currentConfig = Environment.AUTH_ENVIRONMENT[origin];
 
-    Auth.currentConfig = Auth.AUTH_ENVIRONMENT[origin];
+    if (!Auth.currentConfig) return;
 
-    if (!Auth.currentConfig)
-    {
-      console.warn("No hay config definida");
-      return;
-    }
-
-    console.log(`Autenticación en: ${origin}`);
     window.addEventListener("message", Auth.handleAuthToken);
   }
 
   static addAuthButtons(parentElement)
   {
+    if (!Auth.currentConfig) return;
+  
     const container = document.createElement("div");
     parentElement.appendChild(container);
 
@@ -103,10 +52,9 @@ export class Auth
 
   static login(providerName)
   {
-    console.log(`Oauth con ${providerName}`);
     const config = Auth.currentConfig?.[providerName];
 
-    if (!config) throw new Error ("Config. inválida o entorno no soportado");
+    if (!config) throw new Error ("Invalid configuration or unsupported environment");
 
     Auth.openAuthPopup(config);
   }
@@ -114,7 +62,6 @@ export class Auth
   static openAuthPopup(config)
   {
     const params = new URLSearchParams();
-
     params.append("response_type", "code");
     params.append("client_id", config.clientId);
     params.append("scope", config.scope);
