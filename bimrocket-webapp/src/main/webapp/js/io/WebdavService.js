@@ -407,16 +407,16 @@ class WebdavService extends FileService
 
     if (this.useProxy)
     {
-      WebUtils.setBasicAuthorization(request, this.proxyUsername, this.proxyPassword);
+      WebUtils.setAuthorization(request, this.proxyUsername, this.proxyPassword);
       if (credentials.username && credentials.password)
       {
-        WebUtils.setBasicAuthorization(request,
+        WebUtils.setAuthorization(request,
           credentials.username, credentials.password, "Forwarded-Authorization");
       }
     }
     else
     {
-      WebUtils.setBasicAuthorization(request,
+      WebUtils.setAuthorization(request,
         credentials.username, credentials.password);
     }
   }

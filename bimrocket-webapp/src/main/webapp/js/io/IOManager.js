@@ -219,7 +219,7 @@ class IOManager
         request.open("GET", url, true);
         if (basicAuthCredentials)
         {
-          WebUtils.setBasicAuthorization(request,
+          WebUtils.setAuthorization(request,
             basicAuthCredentials.username, basicAuthCredentials.password);
         }
         request.setRequestHeader("X-Requested-With", "XMLHttpRequest");

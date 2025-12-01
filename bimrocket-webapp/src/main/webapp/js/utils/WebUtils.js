@@ -54,16 +54,26 @@ class WebUtils
    *
    * @param {object} request - the request object (XMLHttpRequest or fetch options)
    * @param {string} username - the username
-   * @param {string} password - the password
+   * @param {string} passwordOrToken - the password or the accesstoken
    * @param {string} headerName - the header name to set (Authorization by default)
    */
-  static setBasicAuthorization(request, username, password,
+  static setAuthorization(request, username, passwordOrToken,
     headerName = "Authorization")
   {
-    if (username && password)
+    if (username && passwordOrToken)
     {
-      const userPass = username + ":" + password;
-      const authorization = "Basic " + btoa(userPass);
+      let authorization;
+      const isToken = passwordOrToken.length > 100 && passwordOrToken.startsWith("eyJ");
+
+      if (isToken)
+      {
+        authorization = "Bearer " + passwordOrToken;
+      }
+      else
+      {
+        const userPass = username + ":" + passwordOrToken;
+        authorization = "Basic " + btoa(userPass);
+      }
 
       if (request instanceof XMLHttpRequest)
       {

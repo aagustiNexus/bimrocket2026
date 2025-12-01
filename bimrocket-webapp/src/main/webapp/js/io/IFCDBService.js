@@ -95,7 +95,7 @@ class IFCDBService extends Service
 
     const credentials = this.getCredentials();
 
-    WebUtils.setBasicAuthorization(fetchOptions.headers,
+    WebUtils.setAuthorization(fetchOptions.headers,
       credentials.username, credentials.password);
 
     const response = await fetch(url, fetchOptions);

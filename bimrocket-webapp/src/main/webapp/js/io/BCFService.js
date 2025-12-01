@@ -260,7 +260,7 @@ class BCFService extends Service
 
     const credentials = this.getCredentials();
 
-    WebUtils.setBasicAuthorization(request,
+    WebUtils.setAuthorization(request,
       credentials.username, credentials.password);
 
     if (data)
