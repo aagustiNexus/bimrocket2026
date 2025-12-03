@@ -1068,19 +1068,23 @@ class Application
 
   addEventListener(type, eventListener)
   {
-    var eventListeners = this._eventListeners[type];
+    const eventListeners = this._eventListeners[type];
     if (eventListeners)
     {
-      eventListeners.push(eventListener);
+      let index = eventListeners.indexOf(eventListener);
+      if (index === -1)
+      {
+        eventListeners.push(eventListener);
+      }
     }
   }
 
   removeEventListener(type, eventListener)
   {
-    var eventListeners = this._eventListeners[type];
+    const eventListeners = this._eventListeners[type];
     if (eventListeners)
     {
-      var index = eventListeners.indexOf(eventListener);
+      let index = eventListeners.indexOf(eventListener);
       if (index !== -1)
       {
         eventListeners.splice(index, 1);
@@ -1202,7 +1206,7 @@ class Application
     {
       this.tools[tool.name] = tool;
 
-      var toolEvent = {type : "added", tool : tool};
+      var toolEvent = { type : "added", tool : tool };
       this.notifyEventListeners("tool", toolEvent);
     }
   }
@@ -1215,7 +1219,7 @@ class Application
     {
       delete this.tools[tool.name];
 
-      var toolEvent = {type : "removed", tool : tool};
+      var toolEvent = { type : "removed", tool : tool };
       this.notifyEventListeners("tool", toolEvent);
     }
   }
@@ -1227,30 +1231,35 @@ class Application
       tool = this.tools[tool];
     }
 
-    if (tool === undefined) tool = null;
+    if (!tool) tool = null;
 
     let toolEvent;
     if (tool && tool.immediate)
     {
       tool.execute();
-      toolEvent = {type : "executed", tool : tool};
+      toolEvent = { type : "executed", tool : tool };
       this.notifyEventListeners("tool", toolEvent);
     }
     else
     {
       if (this.tool === tool) return; // already active
 
-      if (this.tool !== null)
+      if (this.tool) // a tool is active
       {
         this.tool.deactivate();
-        toolEvent = {type : "deactivated", tool : this.tool};
+        toolEvent = { type : "deactivated", tool : this.tool };
         this.notifyEventListeners("tool", toolEvent);
       }
       this.tool = tool;
       if (tool)
       {
         tool.activate();
-        toolEvent = {type: "activated", tool: tool};
+        toolEvent = { type : "activated", tool : tool };
+        this.notifyEventListeners("tool", toolEvent);
+      }
+      else
+      {
+        toolEvent = { type : "clear" };
         this.notifyEventListeners("tool", toolEvent);
       }
     }
@@ -2013,7 +2022,11 @@ class Application
     const application = this;
     const params = this.params;
     const url = params.get("url");
-    if (!url) return;
+    if (!url)
+    {
+      application.initTasks();
+      return;
+    }
 
     let dialog = new LoginDialog(application);
 
@@ -2041,10 +2054,16 @@ class Application
         application.initTasks();
       },
       onError : error =>
-      {
+        {
         application.progressBar.visible = false;
-        dialog.show();
-      },
+  
+        if (error.includes("404"))
+        {
+          return MessageDialog.create("ERROR", "Model not found").setClassName("error").setI18N(this.i18n).show();
+        }
+  
+          dialog.show();
+        },
       options : { units : application.setup.units }
     };
 
@@ -2060,6 +2079,7 @@ class Application
       application.progressBar.visible = true;
       IOManager.load(intent);
     };
+
     dialog.onCancel = () =>
     {
       dialog.hide();
@@ -2092,7 +2112,8 @@ class Application
         this.useTool(tool);
       }
     }
-    else
+
+    if (this.executeScriptOnStartUp)
     {
       const scriptPath = params["script"];
       if (scriptPath)

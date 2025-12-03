@@ -51,7 +51,7 @@ class SelectTool extends Tool
     this.panel = this.application.createPanel(this.label, "left");
     this.panel.preferredHeight = 140;
 
-    this.panel.onHide = () => this.application.useTool(null);
+    this.panel.onClose = () => this.application.useTool(null);
 
     const helpElem = document.createElement("div");
     I18N.set(helpElem, "textContent", this.help);
@@ -81,6 +81,7 @@ class SelectTool extends Tool
     container.addEventListener("pointerdown", this._onPointerDown, false);
     container.addEventListener("pointerup", this._onPointerUp, false);
     container.addEventListener("pointerleave", this._onPointerLeave, false);
+    this.selectModeElem.setValue(this.application.selectionMode);
   }
 
   deactivate()

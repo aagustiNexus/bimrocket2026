@@ -109,7 +109,7 @@ class SectionTool extends Tool
     this.panel = application.createPanel(this.label, "left", "panel_section");
     this.panel.preferredHeight = 160;
 
-    this.panel.onHide = () => this.application.useTool(null);
+    this.panel.onClose = () => this.application.useTool(null);
 
     this.helpElem = document.createElement("div");
     this.panel.bodyElem.appendChild(this.helpElem);
@@ -167,7 +167,7 @@ class SectionTool extends Tool
     const application = this.application;
     const container = application.container;
     this.panel.visible = true;
-    container.addEventListener("wheel", this._onWheel, false);
+    container.addEventListener('wheel', this._onWheel, { passive : false });
     this.gestureHandler.enable();
   }
 
@@ -176,7 +176,7 @@ class SectionTool extends Tool
     const application = this.application;
     const container = application.container;
     this.panel.visible = false;
-    container.removeEventListener("wheel", this._onWheel, false);
+    container.removeEventListener('wheel', this._onWheel);
     this.gestureHandler.disable();
   }
 

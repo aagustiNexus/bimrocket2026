@@ -46,7 +46,7 @@ class BIMLayoutTool extends Tool
   {
     this.panel = this.application.createPanel(this.label, "left");
 
-    this.panel.onHide = () => this.application.useTool(null);
+    this.panel.onClose = () => this.application.useTool(null);
 
     this.layoutPanelElem = document.createElement("div");
     this.layoutPanelElem.className = "bim_layout_panel";
@@ -78,7 +78,7 @@ class BIMLayoutTool extends Tool
     const container = application.container;
 
     this.gestureHandler.enable();
-    container.addEventListener('wheel', this._onWheel, false);
+    container.addEventListener('wheel', this._onWheel, { passive : false });
     application.addEventListener('animation', this._animate);
 
     this.sites = [];
@@ -209,7 +209,7 @@ class BIMLayoutTool extends Tool
     const container = application.container;
 
     this.gestureHandler.disable();
-    container.removeEventListener('wheel', this._onWheel, false);
+    container.removeEventListener('wheel', this._onWheel);
     application.removeEventListener('animation', this._animate);
   }
 
