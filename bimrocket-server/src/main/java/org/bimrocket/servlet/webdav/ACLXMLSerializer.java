@@ -3,6 +3,8 @@ package org.bimrocket.servlet.webdav;
 import org.bimrocket.service.file.ACL;
 import org.bimrocket.service.file.Privilege;
 import org.w3c.dom.*;
+
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.*;
@@ -22,6 +24,12 @@ public class ACLXMLSerializer
     try
     {
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+      dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+      dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+      dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+      dbf.setNamespaceAware(true);
+      dbf.setExpandEntityReferences(false);
       DocumentBuilder db = dbf.newDocumentBuilder();
       Document doc = db.newDocument();
 
