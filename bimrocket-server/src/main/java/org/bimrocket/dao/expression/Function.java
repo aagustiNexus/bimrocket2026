@@ -44,99 +44,106 @@ import static org.bimrocket.dao.expression.Expression.STRING;
  */
 public class Function
 {
+  private static final String _OPERAND_1 = "operand1";
+  private static final String _OPERAND_2 = "operand2";
+  private static final String _OPERAND_N = "operandN";
+  private static final String _VALUE = "value";
+  private static final String _STRING_VALUE = "stringValue";
+  private static final String _SUBSTRING = "substring";
+
   public static final Function OR = define("or", BOOLEAN)
-    .argument("operand1", BOOLEAN)
-    .argument("operand2", BOOLEAN)
-    .chainArg("operandN", BOOLEAN)
+    .argument(_OPERAND_1, BOOLEAN)
+    .argument(_OPERAND_2, BOOLEAN)
+    .chainArg(_OPERAND_N, BOOLEAN)
     .build();
   public static final Function AND = define("and", BOOLEAN)
-    .argument("operand1", BOOLEAN)
-    .argument("operand2", BOOLEAN)
-    .chainArg("operandN", BOOLEAN)
+    .argument(_OPERAND_1, BOOLEAN)
+    .argument(_OPERAND_2, BOOLEAN)
+    .chainArg(_OPERAND_N, BOOLEAN)
     .build();
   public static final Function NOT = define("not", BOOLEAN)
     .argument("operand", BOOLEAN)
     .build();
   public static final Function EQ = define("eq", BOOLEAN)
-    .argument("operand1", ANY)
-    .argument("operand2", ANY)
+    .argument(_OPERAND_1, ANY)
+    .argument(_OPERAND_2, ANY)
     .build();
   public static final Function NE = define("ne", BOOLEAN)
-    .argument("operand1", ANY)
-    .argument("operand2", ANY)
+    .argument(_OPERAND_1, ANY)
+    .argument(_OPERAND_2, ANY)
     .build();
   public static final Function LT = define("lt", BOOLEAN)
-    .argument("operand1", ANY)
-    .argument("operand2", ANY)
+    .argument(_OPERAND_1, ANY)
+    .argument(_OPERAND_2, ANY)
     .build();
   public static final Function GT = define("gt", BOOLEAN)
-    .argument("operand1", ANY)
-    .argument("operand2", ANY)
+    .argument(_OPERAND_1, ANY)
+    .argument(_OPERAND_2, ANY)
     .build();
   public static final Function LE = define("le", BOOLEAN)
-    .argument("operand1", ANY)
-    .argument("operand2", ANY)
+    .argument(_OPERAND_1, ANY)
+    .argument(_OPERAND_2, ANY)
     .build();
   public static final Function GE = define("ge", BOOLEAN)
-    .argument("operand1", ANY)
-    .argument("operand2", ANY)
+    .argument(_OPERAND_1, ANY)
+    .argument(_OPERAND_2, ANY)
     .build();
   public static final Function ADD = define("add", NUMBER)
-    .argument("operand1", NUMBER)
-    .argument("operand2", NUMBER)
-    .chainArg("operandN", NUMBER)
+    .argument(_OPERAND_1, NUMBER)
+    .argument(_OPERAND_2, NUMBER)
+    .chainArg(_OPERAND_N, NUMBER)
     .build();
   public static final Function SUB = define("sub", NUMBER)
-    .argument("operand1", NUMBER)
-    .argument("operand2", NUMBER)
-    .chainArg("operandN", NUMBER)
+    .argument(_OPERAND_1, NUMBER)
+    .argument(_OPERAND_2, NUMBER)
+    .chainArg(_OPERAND_N, NUMBER)
     .build();
   public static final Function MUL = define("mul", NUMBER)
     .argument("operand1", NUMBER)
-    .argument("operand2", NUMBER)
-    .chainArg("operandN", NUMBER)
+    .argument(_OPERAND_2, NUMBER)
+    .chainArg(_OPERAND_N, NUMBER)
     .build();
   public static final Function DIV = define("div", NUMBER)
-    .argument("operand1", NUMBER)
-    .argument("operand2", NUMBER)
-    .chainArg("operandN", NUMBER)
+    .argument(_OPERAND_1, NUMBER)
+    .argument(_OPERAND_2, NUMBER)
+    .chainArg(_OPERAND_N, NUMBER)
     .build();
   public static final Function MOD = define("mod", NUMBER)
-    .argument("operand1", NUMBER)
-    .argument("operand2", NUMBER)
-    .chainArg("operandN", NUMBER)
+    .argument(_OPERAND_1, NUMBER)
+    .argument(_OPERAND_2, NUMBER)
+    .chainArg(_OPERAND_N, NUMBER)
     .build();
   public static final Function NEG = define("neg", NUMBER)
     .argument("operand", NUMBER)
     .build();
   public static final Function ROUND = define("round", NUMBER)
-    .argument("value", NUMBER)
+    .argument(_VALUE, NUMBER)
     .build();
   public static final Function FLOOR = define("floor", NUMBER)
-    .argument("value", NUMBER)
+    .argument(_VALUE, NUMBER)
     .build();
   public static final Function CEIL = define("ceil", NUMBER)
-    .argument("value", NUMBER)
+    .argument(_VALUE, NUMBER)
     .build();
   public static final Function CONTAINS = define("contains", BOOLEAN)
-    .argument("stringValue", STRING)
-    .argument("substring", STRING)
+    .argument(_STRING_VALUE, STRING)
+    .argument(_SUBSTRING, STRING)
     .build();
   public static final Function STARTSWITH = define("startsWith", BOOLEAN)
-    .argument("stringValue", STRING)
-    .argument("substring", STRING)
+    .argument(_STRING_VALUE, STRING)
+    .argument(_SUBSTRING, STRING)
     .build();
   public static final Function ENDSWITH = define("endsWith", BOOLEAN)
-    .argument("stringValue", STRING)
-    .argument("substring", STRING)
+    .argument(_STRING_VALUE, STRING)
+    .argument(_SUBSTRING, STRING)
     .build();
-  public static final Function SUBSTRING = define("substring", STRING)
-    .argument("stringValue", STRING)
+  public static final Function SUBSTRING = define(_SUBSTRING, STRING)
+    .argument(_STRING_VALUE, STRING)
     .argument("start", NUMBER, "start index (0 based)")
     .argument("end", NUMBER, "end index (0 based)")
     .build();
   public static final Function LENGTH = define("length", NUMBER)
-    .argument("stringValue", STRING)
+    .argument(_STRING_VALUE, STRING)
     .build();
   public static final Function CONCAT = define("concat", STRING)
     .argument("stringValue1", STRING)
@@ -144,22 +151,22 @@ public class Function
     .chainArg("stringValueN", STRING)
     .build();
   public static final Function TOLOWERCASE = define("toLowerCase", STRING)
-    .argument("stringValue", STRING)
+    .argument(_STRING_VALUE, STRING)
     .build();
   public static final Function TOUPPERCASE = define("toUpperCase", STRING)
-    .argument("stringValue", STRING)
+    .argument(_STRING_VALUE, STRING)
     .build();
   public static final Function TRIM = define("trim", STRING)
-    .argument("stringValue", STRING)
+    .argument(_STRING_VALUE, STRING)
     .build();
   public static final Function TOSTRING = define("toString", STRING)
-    .argument("value", ANY)
+    .argument(_VALUE, ANY)
     .build();
   public static final Function TONUMBER = define("toNumber", NUMBER)
-    .argument("value", ANY)
+    .argument(_VALUE, ANY)
     .build();
   public static final Function TOBOOLEAN = define("toBoolean", BOOLEAN)
-    .argument("value", ANY)
+    .argument(_VALUE, ANY)
     .build();
 
   final String name;
