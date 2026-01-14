@@ -40,5 +40,6 @@ public class InsufficientStorageException extends RuntimeException
 
   public InsufficientStorageException()
   {
+    // Empty method
   }
 }
