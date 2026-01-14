@@ -52,6 +52,9 @@ import org.bimrocket.util.EntityDefinition;
  */
 public class OrientDao<E, ID> implements Dao<E, ID>
 {
+  private static final String _WHERE = " where ";
+  private static final String _SELECT_FROM = "select from ";
+
   private final ODatabaseDocument db;
   private final Class<E> cls;
   private final EntityDefinition definition;
@@ -72,7 +75,7 @@ public class OrientDao<E, ID> implements Dao<E, ID>
     {
       if (!filter.getType().equals(BOOLEAN))
         throw new RuntimeException("Not a boolean expression");
-      query += " where " + OrientExpressionPrinter.toString(filter);
+      query += _WHERE + OrientExpressionPrinter.toString(filter);
     }
 
     if (orderBy != null && !orderBy.isEmpty())
@@ -149,8 +152,8 @@ public class OrientDao<E, ID> implements Dao<E, ID>
   {
     Field idField = definition.getIdentityField(true);
 
-    String query = "select from " + cls.getSimpleName() +
-      " where " + idField.getName() + " = ?";
+    String query = _SELECT_FROM + cls.getSimpleName() +
+      _WHERE + idField.getName() + " = ?";
 
     OResultSet rs = db.query(query, id);
 
@@ -168,8 +171,8 @@ public class OrientDao<E, ID> implements Dao<E, ID>
   {
     if (filter == null) throw new RuntimeException("filter is required");
 
-    String query = "select from " + cls.getSimpleName() +
-      " where " + OrientExpressionPrinter.toString(filter);
+    String query = _SELECT_FROM + cls.getSimpleName() +
+      _WHERE + OrientExpressionPrinter.toString(filter);
 
     OResultSet rs = db.query(query);
 
@@ -201,8 +204,8 @@ public class OrientDao<E, ID> implements Dao<E, ID>
   {
     Field idField = definition.getIdentityField(true);
 
-    String query = "select from " + cls.getSimpleName() +
-      " where " + idField.getName() + " = ?";
+    String query = _SELECT_FROM + cls.getSimpleName() +
+      _WHERE + idField.getName() + " = ?";
     OResultSet rs = db.query(query, id);
     if (rs.hasNext())
     {

@@ -58,6 +58,8 @@ import java.util.logging.Logger;
  */
 public class OrientSetup
 {
+  private static final String _CREATING_CLASS_0 = "Creating class {0}";
+
   protected static final Logger LOGGER =
     Logger.getLogger(OrientSetup.class.getName());
 
@@ -85,14 +87,14 @@ public class OrientSetup
 
   public OClass createClass(String className)
   {
-    LOGGER.log(Level.INFO, "Creating class {0}", className);
+    LOGGER.log(Level.INFO, _CREATING_CLASS_0, className);
 
     return getSchema().createClass(className);
   }
 
   public OClass createClass(String className, String superClassName)
   {
-    LOGGER.log(Level.INFO, "Creating class {0}", className);
+    LOGGER.log(Level.INFO, _CREATING_CLASS_0, className);
 
     OSchema oschema = getSchema();
 
@@ -107,7 +109,7 @@ public class OrientSetup
     OClass oclass = oschema.getClass(className);
     if (oclass == null)
     {
-      LOGGER.log(Level.INFO, "Creating class {0}", className);
+      LOGGER.log(Level.INFO, _CREATING_CLASS_0, className);
 
       oclass = oschema.createClass(className);
     }
@@ -120,7 +122,7 @@ public class OrientSetup
     OClass oclass = oschema.getClass(className);
     if (oclass == null)
     {
-      LOGGER.log(Level.INFO, "Creating class {0}", className);
+      LOGGER.log(Level.INFO, _CREATING_CLASS_0, className);
 
       OClass osuperClass = oschema.getClass(superClassName);
 
