@@ -53,6 +53,10 @@ import org.bson.Document;
  */
 public class MongoExpressionGenerator
 {
+  private static final String _$STR_LEN_CP = "$strLenCP";
+  private static final String _$INDEX_OF_CP = "$indexOfCP";
+  private static final String _TITLE = "title";
+
   public static final Map<Function, String> functionMap = new HashMap<>();
 
   static
@@ -87,7 +91,7 @@ public class MongoExpressionGenerator
     registerFunction(ENDSWITH, "#endsWith");
     registerFunction(CONCAT, "$concat");
     registerFunction(SUBSTRING, "#substring");
-    registerFunction(LENGTH, "$strLenCP");
+    registerFunction(LENGTH, _$STR_LEN_CP);
     registerFunction(TOLOWERCASE, "$toLower");
     registerFunction(TOUPPERCASE, "$toUpper");
     registerFunction(TRIM, "$trim");
@@ -225,16 +229,16 @@ public class MongoExpressionGenerator
     switch (functionName)
     {
       case "#contains" -> document.append("$gte",
-        List.of(new Document("$indexOfCP", arguments), 0));
+        List.of(new Document(_$INDEX_OF_CP, arguments), 0));
 
       case "#startsWith" -> document.append("$eq",
-        List.of(new Document("$indexOfCP", arguments), 0));
+        List.of(new Document(_$INDEX_OF_CP, arguments), 0));
 
       case "#endsWith" -> document.append("$eq",
-        List.of(new Document("$indexOfCP", arguments),
+        List.of(new Document(_$INDEX_OF_CP, arguments),
           new Document("$subtract",
-            List.of(new Document("$strLenCP", arguments.get(0)),
-                    new Document("$strLenCP", arguments.get(1))))));
+            List.of(new Document(_$STR_LEN_CP, arguments.get(0)),
+                    new Document(_$STR_LEN_CP, arguments.get(1))))));
 
       case "#substring" ->
       {
@@ -260,7 +264,7 @@ public class MongoExpressionGenerator
     var generator = new MongoExpressionGenerator();
 //    Expression expression = fn(EQ, fn(ADD, property("index"), 1), 2);
 //    Expression expression = fn(NEG, property("index"));
-    Expression expression = fn(ENDSWITH, property("title"), "trencada");
+    Expression expression = fn(ENDSWITH, property(_TITLE), "trencada");
 
     System.out.println(descending("name").toBsonDocument().toJson());
 
@@ -271,11 +275,11 @@ public class MongoExpressionGenerator
     }
 
     var orderBy = List.of(
-      new OrderByExpression(fn(TOUPPERCASE, property("title"))),
+      new OrderByExpression(fn(TOUPPERCASE, property(_TITLE))),
       new OrderByExpression(property("age"), DESC),
       new OrderByExpression(fn(TRIM, property("surname")))
     );
-    var result = generator.generateAggregate(fn(CONTAINS, property("title"), "Final"), orderBy);
+    var result = generator.generateAggregate(fn(CONTAINS, property(_TITLE), "Final"), orderBy);
     for (Document d : result)
     {
       System.out.println(d.toJson());
