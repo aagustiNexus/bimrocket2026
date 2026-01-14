@@ -48,109 +48,115 @@ import org.bimrocket.service.ifcdb.store.IfcdbConnection;
  */
 public class EmptyIfcConnection implements IfcdbConnection
 {
+  private static final String _NOT_SUPPORTED_YET = "Not supported yet.";
+
   @Override
   public ExpressSchema getSchema()
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public void createSchema()
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public List<IfcdbModel> findModels(Expression filter,
     List<OrderByExpression> orderByList, Set<String> roles)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public List<IfcdbVersion> getModelVersions(String modelId)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public IfcdbModel createModel(IfcdbModel model)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public IfcdbVersion createModelVersion(String modelId, IfcdbVersion ifcdbVersion)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public IfcdbModel getModel(String modelId)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public IfcdbModel updateModel(IfcdbModel model)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public boolean deleteModel(String modelId, int version)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public IfcData createData()
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public IfcData loadData(String modelId, int version)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public void saveData(String modelId, int version, IfcData data)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public IfcData queryData(String query, String language)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public void execute(String query, String language, File outputFile)
     throws IOException
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(_NOT_SUPPORTED_YET);
   }
 
   @Override
   public void begin()
   {
+    // Empty method
   }
 
   @Override
   public void commit()
   {
+    // Empty method
   }
 
   @Override
   public void rollback()
   {
+    // Empty method
   }
 
   @Override
   public void close()
   {
+    // Empty method
   }
 }
