@@ -63,6 +63,8 @@ import org.eclipse.microprofile.config.ConfigProvider;
  */
 public class FileSystemFileStore implements FileStore
 {
+  private static final String _INVALID_PATH = "Invalid path";
+
   static final String BASE = "services.file.store.filesystem.";
 
   File baseDir;
@@ -140,7 +142,7 @@ public class FileSystemFileStore implements FileStore
     File file = getFile(path);
 
     if (file.isDirectory() || !(isValidFile(file) || isACLFile(file)))
-      throw new InvalidRequestException("Invalid path");
+      throw new InvalidRequestException(_INVALID_PATH);
 
     FileInputStream fis = new FileInputStream(file);
 
@@ -154,7 +156,7 @@ public class FileSystemFileStore implements FileStore
     File file = getFile(path);
 
     if (file.isDirectory() || !(isValidFile(file) || isACLFile(file)))
-      throw new InvalidRequestException("Invalid path");
+      throw new InvalidRequestException(_INVALID_PATH);
 
     try (FileOutputStream fos = new FileOutputStream(file))
     {
@@ -255,7 +257,7 @@ public class FileSystemFileStore implements FileStore
     File destFile = getFile(destPath);
 
     if (isACLFile(sourceFile) || isACLFile(destFile))
-      throw new InvalidRequestException("Invalid path");
+      throw new InvalidRequestException(_INVALID_PATH);
 
     if (!sourceFile.renameTo(destFile))
       throw new IOException("Move opration failed");
@@ -268,7 +270,7 @@ public class FileSystemFileStore implements FileStore
     File destFile = getFile(destPath);
 
     if (isACLFile(sourceFile) || isACLFile(destFile) || sourceFile.isDirectory())
-      throw new InvalidRequestException("Invalid path");
+      throw new InvalidRequestException(_INVALID_PATH);
 
     if (destFile.isDirectory())
     {
