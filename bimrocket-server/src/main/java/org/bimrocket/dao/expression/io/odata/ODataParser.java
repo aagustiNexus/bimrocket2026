@@ -61,6 +61,8 @@ import org.bimrocket.exception.ParseException;
  */
 public class ODataParser extends ExpressionParser
 {
+  private static final String _UNEXPECTED_TOKEN = "Unexpected token ";
+
   public static final Map<String, ODataOperator> operatorMap = new HashMap<>();
   public static final Map<String, Function> functionMap = new HashMap<>();
   final Map<String, Field> fieldMap;
@@ -161,7 +163,7 @@ public class ODataParser extends ExpressionParser
         {
           orderByExpressions.add(new OrderByExpression(expression, DESC));
         }
-        else throw createException("Unexpected token " + token);
+        else throw createException(_UNEXPECTED_TOKEN + token);
 
         token = tokenizer.readToken(); // read comma or eof
       }
@@ -175,7 +177,7 @@ public class ODataParser extends ExpressionParser
         expression = parseExpression(0);
         if (expression == null) throw createException("Expression expected");
       }
-      else throw createException("Unexpected token " + token);
+      else throw createException(_UNEXPECTED_TOKEN + token);
     }
     return orderByExpressions;
   }
@@ -241,7 +243,7 @@ public class ODataParser extends ExpressionParser
         throw createException("Expected close parenthesis");
       return parseRightExpression(nested, precedence);
     }
-    throw createException("Unexpected token " + token);
+    throw createException(_UNEXPECTED_TOKEN + token);
   }
 
   private Expression parseRightExpression(Expression leftExpression,
@@ -255,7 +257,7 @@ public class ODataParser extends ExpressionParser
     {
       ODataOperator operator = (ODataOperator)token.getValue();
       if (operator.isUnary())
-        throw createException("Unexpected token " + token);
+        throw createException(_UNEXPECTED_TOKEN + token);
 
       if (operator.getPrecedence() > precedence)
       {
