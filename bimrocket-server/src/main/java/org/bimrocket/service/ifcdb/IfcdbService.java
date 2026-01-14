@@ -73,6 +73,9 @@ import static org.bimrocket.util.TextUtils.getISODate;
 @ApplicationScoped
 public class IfcdbService
 {
+  private static final String _SCHEMA0_MODELID1 = "schema: {0}, modelId: {1}";
+  private static final String _TOTAL_TIME = "Total time: {0} seconds.";
+
   static final Logger LOGGER =
     Logger.getLogger(IfcdbService.class.getName());
 
@@ -180,7 +183,7 @@ public class IfcdbService
   public List<IfcdbVersion> getModelVersions(String schemaName, String modelId)
     throws IOException
   {
-    LOGGER.log(Level.FINE, "schema: {0}, modelId: {1}",
+    LOGGER.log(Level.FINE, _SCHEMA0_MODELID1,
       new Object[] { schemaName, modelId });
 
     ExpressSchema schema = schemas.get(schemaName);
@@ -195,7 +198,7 @@ public class IfcdbService
   public void downloadModel(String schemaName, String modelId, int version,
     File ifcFile) throws IOException
   {
-    LOGGER.log(Level.FINE, "schema: {0}, modelId: {1}",
+    LOGGER.log(Level.FINE, _SCHEMA0_MODELID1,
       new Object[] { schemaName, modelId });
 
     ExpressSchema schema = schemas.get(schemaName);
@@ -242,7 +245,7 @@ public class IfcdbService
         "IFC file created in {0} seconds.", chrono.seconds());
 
       LOGGER.log(Level.INFO,
-        "Total time: {0} seconds.", chrono.totalSeconds());
+        _TOTAL_TIME, chrono.totalSeconds());
     }
   }
 
@@ -318,7 +321,7 @@ public class IfcdbService
         "IFC objects saved in {0} seconds.", chrono.seconds());
 
       LOGGER.log(Level.INFO,
-        "Total time: {0} seconds.", chrono.totalSeconds());
+        _TOTAL_TIME, chrono.totalSeconds());
 
       return ifcdbModel;
     }
@@ -346,7 +349,7 @@ public class IfcdbService
 
   public boolean deleteModel(String schemaName, String modelId, int version)
   {
-    LOGGER.log(Level.FINE, "schema: {0}, modelId: {1}",
+    LOGGER.log(Level.FINE, _SCHEMA0_MODELID1,
       new Object[] { schemaName, modelId });
 
     ExpressSchema schema = schemas.get(schemaName);
@@ -359,7 +362,7 @@ public class IfcdbService
       boolean deleted = conn.deleteModel(modelId, version);
 
       LOGGER.log(Level.INFO,
-        "Total time: {0} seconds.", chrono.totalSeconds());
+        _TOTAL_TIME, chrono.totalSeconds());
 
       return deleted;
     }
@@ -404,7 +407,7 @@ public class IfcdbService
           "IFC file created in {0} seconds.", chrono.seconds());
       }
       LOGGER.log(Level.INFO,
-        "Total time: {0} seconds.", chrono.totalSeconds());
+        _TOTAL_TIME, chrono.totalSeconds());
     }
   }
 
