@@ -35,6 +35,9 @@ import java.util.Map;
 
 public class AzureBlobFileStore implements FileStore
 {
+  private static final String _INVALID_PATH = "Invalid path";
+  private static final String _TEXT_PLAIN = "text/plain";
+
   static final String BASE = "services.file.store.azure.";
 
   private BlobContainerClient containerClient;
@@ -240,7 +243,7 @@ public class AzureBlobFileStore implements FileStore
 
     if (blobPath.endsWith("/") || !(isValidFile(blobPath) || isACLFile(blobPath)))
     {
-      throw new InvalidRequestException("Invalid path");
+      throw new InvalidRequestException(_INVALID_PATH);
     }
 
     BlobClient blobClient = containerClient.getBlobClient(blobPath);
@@ -452,7 +455,7 @@ public class AzureBlobFileStore implements FileStore
     String destBlobPath = normalizePath(destPath);
 
     if (isACLFileName(sourceBlobPath) || isACLFileName(destBlobPath))
-      throw new InvalidRequestException("Invalid path");
+      throw new InvalidRequestException(_INVALID_PATH);
 
     BlobClient sourceClient = containerClient.getBlobClient(sourceBlobPath);
     BlobClient destClient   = containerClient.getBlobClient(destBlobPath);
@@ -474,7 +477,7 @@ public class AzureBlobFileStore implements FileStore
     String destBlobPath   = normalizePath(destPath);
 
     if (isACLFileName(sourceBlobPath) || isACLFileName(destBlobPath))
-      throw new InvalidRequestException("Invalid path");
+      throw new InvalidRequestException(_INVALID_PATH);
 
     BlobClient sourceClient = containerClient.getBlobClient(sourceBlobPath);
     BlobClient destClient   = containerClient.getBlobClient(destBlobPath);
@@ -622,7 +625,7 @@ public class AzureBlobFileStore implements FileStore
     // Scripts and used texts
     if ("js".equals(ext))  return "application/javascript";
     if ("mjs".equals(ext)) return "application/javascript";
-    if ("ts".equals(ext))  return "text/plain";
+    if ("ts".equals(ext))  return _TEXT_PLAIN;
     if ("py".equals(ext))  return "text/x-script.python";
     if ("sh".equals(ext))  return "text/x-shellscript";
     if ("bat".equals(ext)) return "text/x-batch";
@@ -630,7 +633,7 @@ public class AzureBlobFileStore implements FileStore
 
     // Other commons
     if ("json".equals(ext)) return "application/json";
-    if ("txt".equals(ext))  return "text/plain";
+    if ("txt".equals(ext))  return _TEXT_PLAIN;
     if ("csv".equals(ext))  return "text/csv";
     if ("xml".equals(ext))  return "application/xml";
     if ("html".equals(ext)) return "text/html";
@@ -639,7 +642,7 @@ public class AzureBlobFileStore implements FileStore
     if ("pdf".equals(ext))  return "application/pdf";
 
     // Fallback there is not extension or unknown
-    return "text/plain";
+    return _TEXT_PLAIN;
   }
 
   private boolean isValidFile(String blobPath)
