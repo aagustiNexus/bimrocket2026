@@ -85,6 +85,12 @@ import org.bimrocket.util.EntityDefinition;
 @ApplicationScoped
 public class BcfService
 {
+  private static final String _PROJECT_ID__0 = "projectId: {0}";
+  private static final String _TOPIC_ID = "topicId";
+  private static final String _TOPIC_ID_0 = "topicId: {0}";
+  private static final String _COMMENT_ID_0 = "commentId: {0}";
+  private static final String _VIEWPOINT_ID_0 = "viewpointId: {0}";
+
   static final Logger LOGGER =
     Logger.getLogger(BcfService.class.getName());
 
@@ -200,7 +206,7 @@ public class BcfService
 
   public BcfProject getProject(String projectId)
   {
-    LOGGER.log(Level.FINE, "projectId: {0}", projectId);
+    LOGGER.log(Level.FINE, _PROJECT_ID__0, projectId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -211,7 +217,7 @@ public class BcfService
 
   public BcfProject updateProject(String projectId, BcfProject projectUpdate)
   {
-    LOGGER.log(Level.FINE, "projectId: {0}", projectId);
+    LOGGER.log(Level.FINE, _PROJECT_ID__0, projectId);
 
     // admin method
     try (var conn = daoStore.getConnection())
@@ -236,7 +242,7 @@ public class BcfService
 
   public void deleteProject(String projectId)
   {
-    LOGGER.log(Level.FINE, "projectId: {0}", projectId);
+    LOGGER.log(Level.FINE, _PROJECT_ID__0, projectId);
 
     // admin method
     try (var conn = daoStore.getConnection())
@@ -261,7 +267,7 @@ public class BcfService
       {
         topicDao.deleteById(topic.getId());
 
-        Expression topicFilter = fn(EQ, property("topicId"), topic.getId());
+        Expression topicFilter = fn(EQ, property(_TOPIC_ID), topic.getId());
 
         commentDao.delete(topicFilter);
         viewpointDao.delete(topicFilter);
@@ -275,7 +281,7 @@ public class BcfService
 
   public BcfExtensions getExtensions(String projectId)
   {
-    LOGGER.log(Level.FINE, "projectId: {0}", projectId);
+    LOGGER.log(Level.FINE, _PROJECT_ID__0, projectId);
 
     try (BcfDaoConnection conn = daoStore.getConnection())
     {
@@ -291,7 +297,7 @@ public class BcfService
   public BcfExtensions updateExtensions(
     String projectId, BcfExtensions extensionsUpdate)
   {
-    LOGGER.log(Level.FINE, "projectId: {0}", projectId);
+    LOGGER.log(Level.FINE, _PROJECT_ID__0, projectId);
 
     // admin method
     try (var conn = daoStore.getConnection())
@@ -336,7 +342,7 @@ public class BcfService
   public List<BcfTopic> getTopics(String projectId,
     Expression filter, List<OrderByExpression> orderBy)
   {
-    LOGGER.log(Level.FINE, "projectId: {0}", projectId);
+    LOGGER.log(Level.FINE, _PROJECT_ID__0, projectId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -354,7 +360,7 @@ public class BcfService
 
   public BcfTopic getTopic(String projectId, String topicId)
   {
-    LOGGER.log(Level.FINE, "topicId: {0}", topicId);
+    LOGGER.log(Level.FINE, _TOPIC_ID_0, topicId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -365,7 +371,7 @@ public class BcfService
 
   public BcfTopic createTopic(String projectId, BcfTopic topic)
   {
-    LOGGER.log(Level.FINE, "projectId: {0}", projectId);
+    LOGGER.log(Level.FINE, _PROJECT_ID__0, projectId);
 
     String userId = securityService.getCurrentUser().getId();
     topic.setCreationAuthor(userId);
@@ -431,7 +437,7 @@ public class BcfService
   public BcfTopic updateTopic(String projectId, String topicId,
     BcfTopic topicUpdate)
   {
-    LOGGER.log(Level.FINE, "topicId: {0}", topicId);
+    LOGGER.log(Level.FINE, _TOPIC_ID_0, topicId);
 
     String username = securityService.getCurrentUser().getId();
     topicUpdate.setModifyAuthor(username);
@@ -465,7 +471,7 @@ public class BcfService
 
   public void deleteTopic(String projectId, String topicId)
   {
-    LOGGER.log(Level.FINE, "topicId: {0}", topicId);
+    LOGGER.log(Level.FINE, _TOPIC_ID_0, topicId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -482,7 +488,7 @@ public class BcfService
 
       topicDao.deleteById(topicId);
 
-      Expression filter = fn(EQ, property("topicId"), topicId);
+      Expression filter = fn(EQ, property(_TOPIC_ID), topicId);
 
       var commentDao = conn.getCommentDao();
       commentDao.delete(filter);
@@ -501,12 +507,12 @@ public class BcfService
 
   public List<BcfComment> getComments(String projectId, String topicId)
   {
-    LOGGER.log(Level.FINE, "topicId: {0}", topicId);
+    LOGGER.log(Level.FINE, _TOPIC_ID_0, topicId);
 
     try (var conn = daoStore.getConnection())
     {
       var commentDao = conn.getCommentDao();
-      Expression filter = fn(EQ, property("topicId"), topicId);
+      Expression filter = fn(EQ, property(_TOPIC_ID), topicId);
       OrderByExpression orderBy = new OrderByExpression(property("date"));
       return commentDao.find(filter, asList(orderBy));
     }
@@ -515,7 +521,7 @@ public class BcfService
   public BcfComment getComment(String projectId, String topicId,
     String commentId)
   {
-    LOGGER.log(Level.FINE, "commentId: {0}", commentId);
+    LOGGER.log(Level.FINE, _COMMENT_ID_0, commentId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -527,7 +533,7 @@ public class BcfService
   public BcfComment createComment(String projectId, String topicId,
     BcfComment comment)
   {
-    LOGGER.log(Level.FINE, "topicId: {0}", topicId);
+    LOGGER.log(Level.FINE, _TOPIC_ID_0, topicId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -558,7 +564,7 @@ public class BcfService
   public BcfComment updateComment(String projectId, String topicId,
     String commentId, BcfComment commentUpdate)
   {
-    LOGGER.log(Level.FINE, "commentId: {0}", commentId);
+    LOGGER.log(Level.FINE, _COMMENT_ID_0, commentId);
 
     String username = securityService.getCurrentUser().getId();
     commentUpdate.setModifyAuthor(username);
@@ -587,7 +593,7 @@ public class BcfService
 
   public void deleteComment(String projectId, String topicId, String commentId)
   {
-    LOGGER.log(Level.FINE, "commentId: {0}", commentId);
+    LOGGER.log(Level.FINE, _COMMENT_ID_0, commentId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -609,12 +615,12 @@ public class BcfService
 
   public List<BcfViewpoint> getViewpoints(String projectId, String topicId)
   {
-    LOGGER.log(Level.FINE, "topicId: {0}", topicId);
+    LOGGER.log(Level.FINE, _TOPIC_ID_0, topicId);
 
     try (var conn = daoStore.getConnection())
     {
       var viewpointDao = conn.getViewpointDao();
-      Expression filter = fn(EQ, property("topicId"), topicId);
+      Expression filter = fn(EQ, property(_TOPIC_ID), topicId);
       OrderByExpression orderBy = new OrderByExpression(property("index"));
       return viewpointDao.find(filter, asList(orderBy));
     }
@@ -623,7 +629,7 @@ public class BcfService
   public BcfViewpoint getViewpoint(
     String projectId, String topicId, String viewpointId)
   {
-    LOGGER.log(Level.FINE, "viewpointId: {0}", viewpointId);
+    LOGGER.log(Level.FINE, _VIEWPOINT_ID_0, viewpointId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -635,7 +641,7 @@ public class BcfService
   public BcfViewpoint createViewpoint(
     String projectId, String topicId, BcfViewpoint viewpoint)
   {
-    LOGGER.log(Level.FINE, "topicId: {0}", topicId);
+    LOGGER.log(Level.FINE, _TOPIC_ID_0, topicId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -669,7 +675,7 @@ public class BcfService
   public void deleteViewpoint(String projectId, String topicId,
     String viewpointId)
   {
-    LOGGER.log(Level.FINE, "viewpointId: {0}", viewpointId);
+    LOGGER.log(Level.FINE, _VIEWPOINT_ID_0, viewpointId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -696,7 +702,7 @@ public class BcfService
   public BcfSnapshot getViewpointSnapshot(
     String projectId, String topicId, String viewpointId)
   {
-    LOGGER.log(Level.FINE, "viewpointId: {0}", viewpointId);
+    LOGGER.log(Level.FINE, _VIEWPOINT_ID_0, viewpointId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -716,12 +722,12 @@ public class BcfService
   public List<BcfDocumentReference> getDocumentReferences(
     String projectId, String topicId)
   {
-    LOGGER.log(Level.FINE, "topicId: {0}", topicId);
+    LOGGER.log(Level.FINE, _TOPIC_ID_0, topicId);
 
     try (var conn = daoStore.getConnection())
     {
       var docRefDao = conn.getDocumentReferenceDao();
-      Expression filter = fn(EQ, property("topicId"), topicId);
+      Expression filter = fn(EQ, property(_TOPIC_ID), topicId);
 
       return docRefDao.find(filter, Collections.emptyList());
     }
@@ -730,7 +736,7 @@ public class BcfService
   public BcfDocumentReference createDocumentReference(
     String projectId, String topicId, BcfDocumentReference documentReference)
   {
-    LOGGER.log(Level.FINE, "topicId: {0}", topicId);
+    LOGGER.log(Level.FINE, _TOPIC_ID_0, topicId);
 
     try (var conn = daoStore.getConnection())
     {
