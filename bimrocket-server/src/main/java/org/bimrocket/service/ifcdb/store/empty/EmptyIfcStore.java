@@ -57,6 +57,7 @@ public class EmptyIfcStore implements IfcdbStore
   @Override
   public void close()
   {
+    // Empty method
   }
 
   @Override
