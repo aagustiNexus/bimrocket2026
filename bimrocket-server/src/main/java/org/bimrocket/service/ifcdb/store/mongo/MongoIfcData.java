@@ -55,6 +55,8 @@ import org.bson.types.ObjectId;
  */
 public class MongoIfcData extends AbstractListData<Document> implements IfcData
 {
+  private static final String __CLASS = "_class";
+
   MongoCollection<Document> collection;
   Document ifcProject;
   Map<ObjectId, Document> cache = new HashMap<>();
@@ -100,7 +102,7 @@ public class MongoIfcData extends AbstractListData<Document> implements IfcData
     Document document = new Document();
     ObjectId objectId = new ObjectId();
     document.put("_id", objectId);
-    document.put("_class", entity.getTypeName());
+    document.put(__CLASS, entity.getTypeName());
     document.put("_modelId", null);
     document.put("_version", null);
     cache.put(objectId, document);
@@ -116,7 +118,7 @@ public class MongoIfcData extends AbstractListData<Document> implements IfcData
   protected Document createDefinedType(ExpressDefinedType definedType)
   {
     Document document = new Document();
-    document.put("_class", definedType.getTypeName());
+    document.put(__CLASS, definedType.getTypeName());
     document.put("_value", null);
 
     return document;
@@ -125,7 +127,7 @@ public class MongoIfcData extends AbstractListData<Document> implements IfcData
   @Override
   protected String getElementTypeName(Document document)
   {
-    return document.get("_class", String.class);
+    return document.get(__CLASS, String.class);
   }
 
   @Override
