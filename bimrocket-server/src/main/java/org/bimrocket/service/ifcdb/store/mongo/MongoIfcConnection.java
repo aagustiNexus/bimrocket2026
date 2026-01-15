@@ -75,6 +75,13 @@ import org.bson.conversions.Bson;
  */
 public class MongoIfcConnection implements IfcdbConnection
 {
+  private static final String __MODEL_ID = "_modelId";
+  private static final String __VERSION = "_version";
+  private static final String _MODEL_ID = "modelId";
+  private static final String _VERSION = "version";
+  private static final String _ELEMENT_COUNT = "elementCount";
+  private static final String _QUERY_EXECUTION = "Query execution: {0} seconds";
+
   static final String MODEL_COL = "IfcdbModel";
   static final String VERSION_COL = "IfcdbVersion";
   static final String OBJECT_COL = "IfcdbObject";
@@ -106,7 +113,7 @@ public class MongoIfcConnection implements IfcdbConnection
     IndexOptions options = new IndexOptions().unique(false);
 
     db.getCollection(OBJECT_COL)
-      .createIndex(Indexes.ascending("_modelId", "_version"), options);
+      .createIndex(Indexes.ascending(__MODEL_ID, __VERSION), options);
     db.getCollection(OBJECT_COL)
       .createIndex(Indexes.ascending("_class"), options);
     db.getCollection(OBJECT_COL)
@@ -156,7 +163,7 @@ public class MongoIfcConnection implements IfcdbConnection
   public List<IfcdbVersion> getModelVersions(String modelId)
   {
     MongoCollection<Document> versionCol = db.getCollection(VERSION_COL);
-    MongoCursor<Document> cursor = versionCol.find(eq("modelId", modelId))
+    MongoCursor<Document> cursor = versionCol.find(eq(_MODEL_ID, modelId))
       .cursor();
 
     List<IfcdbVersion> versions = new ArrayList<>();
@@ -164,10 +171,10 @@ public class MongoIfcConnection implements IfcdbConnection
     {
       Document document = cursor.next();
       IfcdbVersion ifcdbVersion = new IfcdbVersion();
-      ifcdbVersion.setVersion(document.getInteger("version"));
+      ifcdbVersion.setVersion(document.getInteger(_VERSION));
       ifcdbVersion.setCreationAuthor(document.getString("creationAuthor"));
       ifcdbVersion.setCreationDate(document.getString("creationDate"));
-      ifcdbVersion.setElementCount(document.getInteger("elementCount"));
+      ifcdbVersion.setElementCount(document.getInteger(_ELEMENT_COUNT));
       versions.add(ifcdbVersion);
     }
     return versions;
@@ -202,11 +209,11 @@ public class MongoIfcConnection implements IfcdbConnection
     MongoCollection<Document> versionCol = db.getCollection(VERSION_COL);
 
     Document version = new Document();
-    version.put("modelId", modelId);
-    version.put("version", ifcdbVersion.getVersion());
+    version.put(_MODEL_ID, modelId);
+    version.put(_VERSION, ifcdbVersion.getVersion());
     version.put("creationDate", ifcdbVersion.getCreationDate());
     version.put("creationAuthor", ifcdbVersion.getCreationAuthor());
-    version.put("elementCount", 0);
+    version.put(_ELEMENT_COUNT, 0);
     versionCol.insertOne(version);
 
     return ifcdbVersion;
@@ -260,21 +267,21 @@ public class MongoIfcConnection implements IfcdbConnection
 
     if (version == 0) // remove all versions
     {
-      objectCol.deleteMany(eq("_modelId", modelId));
-      versionCol.deleteMany(eq("modelId", modelId));
+      objectCol.deleteMany(eq(__MODEL_ID, modelId));
+      versionCol.deleteMany(eq(_MODEL_ID, modelId));
       deleteResult = modelCol.deleteOne(eq("_id", modelId));
     }
     else // remove specific version
     {
-      objectCol.deleteMany(and(eq("_modelId", modelId), eq("_version", version)));
+      objectCol.deleteMany(and(eq(__MODEL_ID, modelId), eq(__VERSION, version)));
 
       deleteResult =
-        versionCol.deleteOne(and(eq("modelId", modelId), eq("version", version)));
+        versionCol.deleteOne(and(eq(_MODEL_ID, modelId), eq(_VERSION, version)));
 
       if (version == model.getLastVersion())
       {
-        IfcdbVersion lastVersion = versionCol.find(eq("modelId", modelId))
-          .sort(Sorts.descending("version"))
+        IfcdbVersion lastVersion = versionCol.find(eq(_MODEL_ID, modelId))
+          .sort(Sorts.descending(_VERSION))
           .limit(1)
           .first();
         if (lastVersion == null)
@@ -307,13 +314,13 @@ public class MongoIfcConnection implements IfcdbConnection
     MongoIfcData data = new MongoIfcData(schema, objectCol);
 
     MongoCursor<Document> cursor = objectCol.find(
-      and(eq("_modelId", modelId), eq("_version", version))).cursor();
+      and(eq(__MODEL_ID, modelId), eq(__VERSION, version))).cursor();
 
     cursor.forEachRemaining(object -> data.getElements().add(object));
 
     data.updateCache();
 
-    LOGGER.log(Level.INFO, "Query execution: {0} seconds", chrono.seconds());
+    LOGGER.log(Level.INFO, _QUERY_EXECUTION, chrono.seconds());
     chrono.mark();
 
     return data;
@@ -328,18 +335,18 @@ public class MongoIfcConnection implements IfcdbConnection
 
     for (Document element : mongoData.getElements())
     {
-      element.put("_modelId", modelId);
-      element.put("_version", version);
+      element.put(__MODEL_ID, modelId);
+      element.put(__VERSION, version);
     }
 
     MongoCollection<Document> ifcObjects = db.getCollection(OBJECT_COL);
     ifcObjects.insertMany(mongoData.getElements());
 
     MongoCollection<Document> versionCol = db.getCollection(VERSION_COL);
-    Bson filter = and(eq("modelId", modelId), eq("version", version));
+    Bson filter = and(eq(_MODEL_ID, modelId), eq(_VERSION, version));
     Document ifcdbVersion = versionCol.find(filter).first();
     if (ifcdbVersion == null) throw new NotFoundException("Invalid version");
-    ifcdbVersion.put("elementCount", mongoData.getElements().size());
+    ifcdbVersion.put(_ELEMENT_COUNT, mongoData.getElements().size());
     versionCol.replaceOne(filter, ifcdbVersion);
 
     LOGGER.log(Level.INFO, "Model loaded in {0} seconds", chrono.totalSeconds());
@@ -362,7 +369,7 @@ public class MongoIfcConnection implements IfcdbConnection
 
     MongoCursor<Document> cursor = objectCol.aggregate(aggregate).cursor();
 
-    LOGGER.log(Level.INFO, "Query execution: {0} seconds", chrono.seconds());
+    LOGGER.log(Level.INFO, _QUERY_EXECUTION, chrono.seconds());
     chrono.mark();
 
     cursor.forEachRemaining(document -> data.getElements().add(document));
@@ -390,7 +397,7 @@ public class MongoIfcConnection implements IfcdbConnection
     List<Document> results = new ArrayList<>();
     cursor.forEachRemaining(document -> results.add(document));
 
-    LOGGER.log(Level.INFO, "Query execution: {0} seconds", chrono.seconds());
+    LOGGER.log(Level.INFO, _QUERY_EXECUTION, chrono.seconds());
     chrono.mark();
 
     exportToJson(results, outputFile);
