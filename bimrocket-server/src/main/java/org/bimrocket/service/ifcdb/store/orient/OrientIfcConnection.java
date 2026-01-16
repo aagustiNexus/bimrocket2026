@@ -72,6 +72,18 @@ import org.bimrocket.service.ifcdb.store.IfcdbConnection;
  */
 public class OrientIfcConnection implements IfcdbConnection
 {
+  private static final String _VERSION = "version";
+  private static final String _CREATION_AUTHOR = "creationAuthor";
+  private static final String _CREATION_DATE = "creationDate";
+  private static final String _ELEMENT_COUNT = "elementCount";
+  private static final String _IFCDB_MODEL = "IfcdbModel";
+  private static final String _DESCRIPTION = "description";
+  private static final String _READ_ROLE_IDS = "readRoleIds";
+  private static final String _UPLOAD_ROLE_IDS = "uploadRoleIds";
+  private static final String _LAST_VERSION = "lastVersion";
+  private static final String _SELECT_FROM_IFCDBMODEL = "select from IfcdbModel where id = ? ";
+  private static final String _IFCDB_VERSION = "IfcdbVersion";
+
   ODatabaseDocument db;
   ExpressSchema schema;
   int saveBlockSize = 10000;
@@ -152,10 +164,10 @@ public class OrientIfcConnection implements IfcdbConnection
     {
       OResult result = rs.next();
       IfcdbVersion version = new IfcdbVersion();
-      version.setVersion(result.getProperty("version"));
-      version.setCreationAuthor(result.getProperty("creationAuthor"));
-      version.setCreationDate(result.getProperty("creationDate"));
-      version.setElementCount(result.getProperty("elementCount"));
+      version.setVersion(result.getProperty(_VERSION));
+      version.setCreationAuthor(result.getProperty(_CREATION_AUTHOR));
+      version.setCreationDate(result.getProperty(_CREATION_DATE));
+      version.setElementCount(result.getProperty(_ELEMENT_COUNT));
       versions.add(version);
     }
     return versions;
@@ -164,13 +176,13 @@ public class OrientIfcConnection implements IfcdbConnection
   @Override
   public IfcdbModel createModel(IfcdbModel model)
   {
-    ODocument omodel = new ODocument("IfcdbModel");
+    ODocument omodel = new ODocument(_IFCDB_MODEL);
     omodel.setProperty("id", model.getId());
     omodel.setProperty("name", model.getName());
-    omodel.setProperty("description", model.getDescription());
-    omodel.setProperty("readRoleIds", model.getReadRoleIds());
-    omodel.setProperty("uploadRoleIds", model.getUploadRoleIds());
-    omodel.setProperty("lastVersion", 0);
+    omodel.setProperty(_DESCRIPTION, model.getDescription());
+    omodel.setProperty(_READ_ROLE_IDS, model.getReadRoleIds());
+    omodel.setProperty(_UPLOAD_ROLE_IDS, model.getUploadRoleIds());
+    omodel.setProperty(_LAST_VERSION, 0);
     db.save(omodel);
 
     return model;
@@ -180,7 +192,7 @@ public class OrientIfcConnection implements IfcdbConnection
   public IfcdbVersion createModelVersion(String modelId,
     IfcdbVersion ifcdbVersion)
   {
-    try (OResultSet rs = db.query("select from IfcdbModel where id = ? ",
+    try (OResultSet rs = db.query(_SELECT_FROM_IFCDBMODEL,
          modelId))
     {
       if (rs.hasNext())
@@ -188,18 +200,18 @@ public class OrientIfcConnection implements IfcdbConnection
         OElement omodel = rs.next().getElement().orElse(null);
         if (omodel != null)
         {
-          int lastVersion = omodel.getProperty("lastVersion");
+          int lastVersion = omodel.getProperty(_LAST_VERSION);
           ifcdbVersion.setVersion(lastVersion + 1);
 
-          omodel.setProperty("lastVersion", ifcdbVersion.getVersion());
+          omodel.setProperty(_LAST_VERSION, ifcdbVersion.getVersion());
           db.save(omodel);
 
-          ODocument oversion = new ODocument("IfcdbVersion");
+          ODocument oversion = new ODocument(_IFCDB_VERSION);
           oversion.setProperty("model", omodel);
-          oversion.setProperty("version", ifcdbVersion.getVersion());
-          oversion.setProperty("creationDate", ifcdbVersion.getCreationDate());
-          oversion.setProperty("creationAuthor", ifcdbVersion.getCreationAuthor());
-          oversion.setProperty("elementCount", 0);
+          oversion.setProperty(_VERSION, ifcdbVersion.getVersion());
+          oversion.setProperty(_CREATION_DATE, ifcdbVersion.getCreationDate());
+          oversion.setProperty(_CREATION_AUTHOR, ifcdbVersion.getCreationAuthor());
+          oversion.setProperty(_ELEMENT_COUNT, 0);
           db.save(oversion);
 
           return ifcdbVersion;
@@ -212,7 +224,7 @@ public class OrientIfcConnection implements IfcdbConnection
   @Override
   public IfcdbModel getModel(String modelId)
   {
-    try (OResultSet rs = db.query("select from IfcdbModel where id = ? ",
+    try (OResultSet rs = db.query(_SELECT_FROM_IFCDBMODEL,
          modelId))
     {
       if (!rs.hasNext()) return null;
@@ -227,7 +239,7 @@ public class OrientIfcConnection implements IfcdbConnection
   @Override
   public IfcdbModel updateModel(IfcdbModel model)
   {
-    try (OResultSet rs = db.query("select from IfcdbModel where id = ? ",
+    try (OResultSet rs = db.query(_SELECT_FROM_IFCDBMODEL,
          model.getId()))
     {
       if (!rs.hasNext())
@@ -235,9 +247,9 @@ public class OrientIfcConnection implements IfcdbConnection
 
       OElement omodel = rs.next().getElement().get();
       omodel.setProperty("name", model.getName());
-      omodel.setProperty("description", model.getDescription());
-      omodel.setProperty("readRoleIds", model.getReadRoleIds());
-      omodel.setProperty("uploadRoleIds", model.getUploadRoleIds());
+      omodel.setProperty(_DESCRIPTION, model.getDescription());
+      omodel.setProperty(_READ_ROLE_IDS, model.getReadRoleIds());
+      omodel.setProperty(_UPLOAD_ROLE_IDS, model.getUploadRoleIds());
       db.save(omodel);
       OrientDecoder.create(IfcdbModel.class).copyToEntity(omodel, model);
       return model;
@@ -308,7 +320,7 @@ public class OrientIfcConnection implements IfcdbConnection
       {
         if (rs.hasNext()) // at least one version exists
         {
-          int lastVersion = rs.next().getProperty("lastVersion");
+          int lastVersion = rs.next().getProperty(_LAST_VERSION);
           db.command("update IfcdbModel set lastVersion = ? " +
            "where id = ?", lastVersion, modelId);
         }
@@ -432,7 +444,7 @@ public class OrientIfcConnection implements IfcdbConnection
     }
 
     // update the number of elements saved
-    oversion.setProperty("elementCount", orientIfcSaver.getTotalCount());
+    oversion.setProperty(_ELEMENT_COUNT, orientIfcSaver.getTotalCount());
     db.save(oversion);
 
     LOGGER.log(Level.INFO, "Total objects saved: {0}",
@@ -522,29 +534,29 @@ public class OrientIfcConnection implements IfcdbConnection
 
   private void createClasses(OrientIfcSetup setup)
   {
-    OClass modelClass = setup.getClass("IfcdbModel");
+    OClass modelClass = setup.getClass(_IFCDB_MODEL);
     if (modelClass == null)
     {
-      modelClass = setup.createVertexClass("IfcdbModel");
+      modelClass = setup.createVertexClass(_IFCDB_MODEL);
       modelClass.createProperty("id", OType.STRING); // project GlobalId
       modelClass.createProperty("name", OType.STRING);
-      modelClass.createProperty("description", OType.STRING);
-      modelClass.createProperty("lastVersion", OType.INTEGER);
-      modelClass.createProperty("readRoleIds", OType.EMBEDDEDSET, OType.STRING);
-      modelClass.createProperty("uploadRoleIds", OType.EMBEDDEDSET, OType.STRING);
+      modelClass.createProperty(_DESCRIPTION, OType.STRING);
+      modelClass.createProperty(_LAST_VERSION, OType.INTEGER);
+      modelClass.createProperty(_READ_ROLE_IDS, OType.EMBEDDEDSET, OType.STRING);
+      modelClass.createProperty(_UPLOAD_ROLE_IDS, OType.EMBEDDEDSET, OType.STRING);
     }
     setup.createIndex(modelClass, "IfcdbModelIdIdx",
       OClass.INDEX_TYPE.UNIQUE_HASH_INDEX, "id");
 
-    OClass versionClass = setup.getClass("IfcdbVersion");
+    OClass versionClass = setup.getClass(_IFCDB_VERSION);
     if (versionClass == null)
     {
-      versionClass = setup.createVertexClass("IfcdbVersion");
+      versionClass = setup.createVertexClass(_IFCDB_VERSION);
       versionClass.createProperty("model", OType.LINK, modelClass);
-      versionClass.createProperty("version", OType.INTEGER);
-      versionClass.createProperty("creationDate", OType.STRING);
-      versionClass.createProperty("creationAuthor", OType.STRING);
-      versionClass.createProperty("elementCount", OType.INTEGER);
+      versionClass.createProperty(_VERSION, OType.INTEGER);
+      versionClass.createProperty(_CREATION_DATE, OType.STRING);
+      versionClass.createProperty(_CREATION_AUTHOR, OType.STRING);
+      versionClass.createProperty(_ELEMENT_COUNT, OType.INTEGER);
     }
 
     OClass ifcVClass = setup.getClass("IfcV");
@@ -572,7 +584,7 @@ public class OrientIfcConnection implements IfcdbConnection
       "where (model.name like :id_name or model.id = :id_name) " +
       "and (version = :version or (:version = 0 and version = model.lastVersion))) " +
       "while @this instanceof IfcV", true,
-      "id_name", "version");
+      "id_name", _VERSION);
   }
 
   private void exportToJson(List<OResult> results, File file) throws IOException
