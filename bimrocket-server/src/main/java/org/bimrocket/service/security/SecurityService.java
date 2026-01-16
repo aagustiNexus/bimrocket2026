@@ -77,6 +77,9 @@ import org.bimrocket.util.EntityDefinition;
 @ApplicationScoped
 public class SecurityService
 {
+  private static final String _USER_ID_0 = "userId: {0}";
+  private static final String _ROLE_ID_0 = "roleId: {0}";
+
   static final Logger LOGGER =
     Logger.getLogger(SecurityService.class.getName());
 
@@ -206,7 +209,7 @@ public class SecurityService
 
   public User getUser(String userId)
   {
-    LOGGER.log(Level.FINE, "userId: {0}", userId);
+    LOGGER.log(Level.FINE, _USER_ID_0, userId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -217,7 +220,7 @@ public class SecurityService
 
   public User createUser(User user)
   {
-    LOGGER.log(Level.FINE, "userId: {0}", user.getId());
+    LOGGER.log(Level.FINE, _USER_ID_0, user.getId());
 
     //Send true to parameter isNewUser
     validateUser(user, true);
@@ -245,7 +248,7 @@ public class SecurityService
   public User updateUser(User userUpdate)
   {
     String userId = userUpdate.getId();
-    LOGGER.log(Level.FINE, "userId: {0}", userId);
+    LOGGER.log(Level.FINE, _USER_ID_0, userId);
 
     //Send false to parameter isNewUser
     validateUser(userUpdate, false);
@@ -278,7 +281,7 @@ public class SecurityService
 
   public boolean deleteUser(String userId)
   {
-    LOGGER.log(Level.FINE, "userId: {0}", userId);
+    LOGGER.log(Level.FINE, _USER_ID_0, userId);
     userCache.remove(userId);
 
     try (var conn = daoStore.getConnection())
@@ -301,7 +304,7 @@ public class SecurityService
 
   public Role getRole(String roleId)
   {
-    LOGGER.log(Level.FINE, "roleId: {0}", roleId);
+    LOGGER.log(Level.FINE, _ROLE_ID_0, roleId);
 
     try (var conn = daoStore.getConnection())
     {
@@ -312,7 +315,7 @@ public class SecurityService
 
   public Role createRole(Role role)
   {
-    LOGGER.log(Level.FINE, "roleId: {0}", role.getId());
+    LOGGER.log(Level.FINE, _ROLE_ID_0, role.getId());
 
     try (var conn = daoStore.getConnection())
     {
@@ -323,7 +326,7 @@ public class SecurityService
 
   public Role updateRole(Role role)
   {
-    LOGGER.log(Level.FINE, "roleId: {0}", role.getId());
+    LOGGER.log(Level.FINE, _ROLE_ID_0, role.getId());
     roleCache.remove(role.getId());
 
     try (var conn = daoStore.getConnection())
@@ -335,7 +338,7 @@ public class SecurityService
 
   public boolean deleteRole(String roleId)
   {
-    LOGGER.log(Level.FINE, "roleId: {0}", roleId);
+    LOGGER.log(Level.FINE, _ROLE_ID_0, roleId);
     roleCache.remove(roleId);
 
     try (var conn = daoStore.getConnection())
@@ -348,7 +351,7 @@ public class SecurityService
   public void changePassword(String userId,
     String oldPassword, String newPassword)
   {
-    LOGGER.log(Level.FINE, "userId: {0}", userId);
+    LOGGER.log(Level.FINE, _USER_ID_0, userId);
 
     if (ADMIN_USER.equals(userId) ||
         ANONYMOUS_USER.equals(userId) ||
