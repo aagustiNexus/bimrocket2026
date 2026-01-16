@@ -85,6 +85,7 @@ public class MongoIfcStore implements IfcdbStore
   @Override
   public void close()
   {
+    // Empty method
   }
 
   public MongoClient getMongoClient(String dbAlias)
