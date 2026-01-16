@@ -62,6 +62,7 @@ public class JSTask extends Task
   @Override
   public void destroy() throws Exception
   {
+    // Empty method
   }
 
   @Override
