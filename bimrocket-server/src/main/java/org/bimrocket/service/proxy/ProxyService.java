@@ -66,6 +66,8 @@ import static org.bimrocket.service.security.SecurityConstants.AUTHENTICATED_ROL
 @ApplicationScoped
 public class ProxyService
 {
+  private static final String _AUTHORIZATION = "Authorization";
+
   static final Logger LOGGER = Logger.getLogger(ProxyService.class.getName());
 
   static final String BASE = "services.proxy.";
@@ -256,21 +258,21 @@ public class ProxyService
       String value = servletRequest.getHeader(name);
 
       if (alias != null
-        && name.equalsIgnoreCase("Authorization")
+        && name.equalsIgnoreCase(_AUTHORIZATION)
         && "Bearer implicit".equals(value))
       {
         String authoKey = BASE + "aliases." + alias + ".authorization";
         String autho = config.getOptionalValue(authoKey, String.class).orElse(null);
         if (autho != null)
         {
-          builder.header("Authorization", autho);
+          builder.header(_AUTHORIZATION, autho);
         }
       }
       else
       {
         if (name.equalsIgnoreCase("Forwarded-Authorization"))
         {
-          builder.header("Authorization", value);
+          builder.header(_AUTHORIZATION, value);
         }
         else if (!ignoredHeaders.contains(name.toLowerCase()))
         {
