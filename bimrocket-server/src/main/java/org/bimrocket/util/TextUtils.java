@@ -39,6 +39,8 @@ import java.util.Date;
  */
 public class TextUtils
 {
+  private static final String _ISO_DATE = "yyyy-MM-dd'T'HH:mm:ss";
+
   public static String getISODate()
   {
     return getISODate(new Date());
@@ -46,7 +48,7 @@ public class TextUtils
 
   public static String getISODate(Date date)
   {
-    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    SimpleDateFormat df = new SimpleDateFormat(_ISO_DATE);
     return df.format(date);
   }
 }
