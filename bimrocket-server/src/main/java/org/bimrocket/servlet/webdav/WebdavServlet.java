@@ -72,6 +72,9 @@ public class WebdavServlet extends HttpServlet
 {
   private static final long serialVersionUID = 1L;
 
+  private static final String _UTF_8 = "UTF-8";
+  private static final String _TEXT_PLAIN = "text/plain";
+
   static final Logger LOGGER =
     Logger.getLogger(WebdavServlet.class.getName());
 
@@ -124,7 +127,7 @@ public class WebdavServlet extends HttpServlet
       String xml = ACLXMLSerializer.serialize(acl);
 
       response.setContentType("application/xml");
-      response.setCharacterEncoding("UTF-8");
+      response.setCharacterEncoding(_UTF_8);
       response.setStatus(207);
 
       try (Writer writer = response.getWriter())
@@ -148,13 +151,13 @@ public class WebdavServlet extends HttpServlet
     List<Metadata> metadatas = fileService.find(path, options);
 
     response.setContentType("text/xml");
-    response.setCharacterEncoding("UTF-8");
+    response.setCharacterEncoding(_UTF_8);
     response.setHeader("DAV", "1,2");
 
     if (metadatas.isEmpty())
     {
       response.setStatus(404);
-      response.setContentType("text/plain");
+      response.setContentType(_TEXT_PLAIN);
       response.getWriter().println("The requested resource was not found on this server.");
 
     }
@@ -176,6 +179,7 @@ public class WebdavServlet extends HttpServlet
   protected void doProppatch(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException
   {
+    // Empty method
   }
 
   protected void doMkcol(HttpServletRequest request, HttpServletResponse response)
@@ -264,14 +268,14 @@ public class WebdavServlet extends HttpServlet
     catch( IllegalArgumentException e)
     {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-      response.setContentType("text/plain");
+      response.setContentType(_TEXT_PLAIN);
       response.getWriter().write(e.getMessage());
       return;
     }
     catch (Exception e)
     {
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      response.setContentType("text/plain");
+      response.setContentType(_TEXT_PLAIN);
       response.getWriter().write("Internal Server Error");
       return;
     }
@@ -365,7 +369,7 @@ public class WebdavServlet extends HttpServlet
     catch (IOException ex)
     {
         response.setStatus(HttpServletResponse.SC_CONFLICT);
-        response.setContentType("text/plain");
+        response.setContentType(_TEXT_PLAIN);
         response.getWriter().write(ex.getMessage());
     }
     catch (LockedFileException ex)
@@ -410,7 +414,7 @@ public class WebdavServlet extends HttpServlet
     int servletPathLength = request.getServletPath().length();
     int baseLength = contextPathLength + servletPathLength;
     String spath = request.getRequestURI().substring(baseLength);
-    spath = URLDecoder.decode(spath, "UTF-8");
+    spath = URLDecoder.decode(spath, _UTF_8);
     return new Path(spath);
   }
 
