@@ -50,6 +50,8 @@ public class ProxyServlet extends HttpServlet
 {
   private static final long serialVersionUID = 1L;
 
+  private static final String _TEXT_PLAIN = "text/plain";
+
   @Inject
   transient ProxyService proxyService;
 
@@ -64,19 +66,19 @@ public class ProxyServlet extends HttpServlet
     catch (NotAuthorizedException ex)
     {
       response.setStatus(401);
-      response.setContentType("text/plain");
+      response.setContentType(_TEXT_PLAIN);
       response.getWriter().println(ex.getMessage());
     }
     catch (AccessDeniedException ex)
     {
       response.setStatus(403);
-      response.setContentType("text/plain");
+      response.setContentType(_TEXT_PLAIN);
       response.getWriter().println(ex.getMessage());
     }
     catch (Exception ex)
     {
       response.setStatus(500);
-      response.setContentType("text/plain");
+      response.setContentType(_TEXT_PLAIN);
       response.getWriter().println(ex.toString());
     }
   }
